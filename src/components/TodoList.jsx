@@ -6,14 +6,20 @@ const TodoList = ({ todos, loading, error, toggleTodo }) => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="space-y-3">
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          toggleTodo={toggleTodo}
-        />
-      ))}
+    <div className="space-y-3 mt-4">
+      {
+        // Loop through the todos array
+        todos.map((todo) => (
+          
+          // For each todo, render a TodoItem component
+          <TodoItem
+            key={todo.id} // unique key for React
+            todo={todo} // pass todo data
+            toggleTodo={toggleTodo} // pass function
+          />
+          
+        ))
+      }
     </div>
   );
 };

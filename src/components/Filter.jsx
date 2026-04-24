@@ -1,16 +1,19 @@
 const Filter = ({ filter, setFilter }) => {
   return (
-    <div className="flex justify-center my-4">
-      <select
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-        className="p-2 border rounded"
-      >
-        <option value="all">All</option>
-        <option value="completed">Completed</option>
-        <option value="pending">Pending</option>
-      </select>
-    </div>
+    // Dropdown menu to select filter type
+    <select
+      // Current selected value (all / completed / pending)
+      value={filter}
+
+      // Update filter state when user selects a new option
+      onChange={(e) => setFilter(e.target.value)}
+
+      className="w-full p-2 border border-gray-300 rounded-md 
+      focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="all">All</option>
+      <option value="completed">Completed</option>
+      <option value="pending">Pending</option>
+    </select>
   );
 };
 

@@ -11,46 +11,44 @@ export const useTodos = () => {
     // Function to fetch todos from API
     const loadTodos = async () => {
       try {
-        // Call API function to get data
-        const data = await fetchTodos();
-
-        // Save fetched todos into state
-        setTodos(data);
-      } catch (err) {
-        // If an error occurs, store error message
-        setError("Something went wrong");
+        const data = await fetchTodos(); // Call API function to get data 
+        setTodos(data);// Save fetched todos into state
+      } catch (err) { 
+        setError("Something went wrong");// If an error occurs, store error message
       } finally {
-        // Stop loading whether success or error
-        setLoading(false);
+         setLoading(false);  // Stop loading whether success or error
       }
-    };
-
-    // Execute the fetch function
-    loadTodos();
+    }; 
+    loadTodos(); // Execute the fetch function
   }, []);
 
   // Function to toggle completed state of a todo
-  const toggleTodo = (id) => {
-    setTodos((prevTodos) =>
-      // Loop through previous todos
-      prevTodos.map((todo) =>
-        // If this is the clicked todo, flip its completed value
-        todo.id === id
-          ? { ...todo, completed: !todo.completed }
-          : todo // otherwise keep it unchanged
-      )
-    );
-  };
+ // Toggle the completed state of a specific todo
+const toggleTodo = (id) => {
+  setTodos((prevTodos) =>
+    // Go through all previous todos
+    prevTodos.map((todo) =>
+      // If this is the clicked todo → toggle its completed value
+      todo.id === id
+        ? { ...todo, completed: !todo.completed }
+        // Otherwise → return todo unchanged
+        : todo
+    )
+  );
+};
 
-  // Return data and functions to be used in components
- 
-
-  const getFilteredTodos = (filter) => {
+// Filter todos based on selected filter (all / completed / pending)
+const getFilteredTodos = (todos, filter) => {
   return todos.filter((todo) => {
+    // Show only completed todos
     if (filter === "completed") return todo.completed;
+
+    // Show only pending (not completed) todos
     if (filter === "pending") return !todo.completed;
+
+    // Default → show all todos
     return true;
   });
-}; 
+};
 return {todos,loading,error,toggleTodo , getFilteredTodos,};
 };
