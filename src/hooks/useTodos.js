@@ -43,5 +43,14 @@ export const useTodos = () => {
   };
 
   // Return data and functions to be used in components
-  return {todos,loading,error,toggleTodo};
+ 
+
+  const getFilteredTodos = (filter) => {
+  return todos.filter((todo) => {
+    if (filter === "completed") return todo.completed;
+    if (filter === "pending") return !todo.completed;
+    return true;
+  });
+}; 
+return {todos,loading,error,toggleTodo , getFilteredTodos,};
 };
