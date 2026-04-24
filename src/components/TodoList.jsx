@@ -1,10 +1,15 @@
 import TodoItem from "./TodoItem";
 
-const TodoList = ({ todos, loading, error, toggleTodo }) => {
+const TodoList = ({ todos, loading, error }) => {
   if (loading) return <p className="text-center">Loading...</p>;
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
-
+if (todos.length === 0)
+  return (
+    <p className="text-center text-gray-500">
+      No todos found
+    </p>
+  );
   return (
     <div className="space-y-3 mt-4">
       {
@@ -15,7 +20,6 @@ const TodoList = ({ todos, loading, error, toggleTodo }) => {
           <TodoItem
             key={todo.id} // unique key for React
             todo={todo} // pass todo data
-            toggleTodo={toggleTodo} // pass function
           />
           
         ))

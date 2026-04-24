@@ -1,3 +1,4 @@
+
 # Todo App
 
 This is a simple Todo application built with React.
@@ -7,6 +8,8 @@ It also includes:
 
 * filtering (all / completed / pending)
 * search (filter todos by title in real time)
+* performance optimization using memoization
+* state sharing using Context API (to avoid prop drilling)
 
 ---
 
@@ -49,7 +52,7 @@ The data flows in one direction:
 
 API → useTodos → App.jsx → TodoList → TodoItem → UI
 
-Filtering and searching both happen in `App.jsx` using data from the hook.
+Filtering and searching both happen in `App.jsx` using data from the hook, then passed down to the UI.
 
 ---
 
@@ -62,9 +65,10 @@ This is the main controller of the app.
 * Uses the `useTodos` hook to get data and functions
 * Manages filter state (all / completed / pending)
 * Manages search state
-* Applies filtering first, then search
+* Uses `useMemo` to optimize filtering and searching
+* Wraps the application with `TodoContext.Provider`
 * Passes final todos to `TodoList`
-* Passes toggle function to update todos
+* Provides `toggleTodo` through Context instead of prop drilling
 
 ---
 
@@ -85,6 +89,7 @@ Handles searching.
 * Displays input field
 * Updates search state while typing
 * Filters todos by title in real time
+* Works together with filter
 * Only controls UI
 
 ---
@@ -109,6 +114,7 @@ Renders the list of todos.
 * Shows empty state if no todos match
 * Loops through todos using `.map()`
 * Sends each todo to `TodoItem`
+* No longer receives `toggleTodo` prop (handled by Context API)
 
 ---
 
@@ -118,7 +124,8 @@ Displays a single todo.
 
 * Shows checkbox and title
 * Checkbox reflects completed state
-* Clicking checkbox triggers `toggleTodo`
+* Uses Context API to access `toggleTodo`
+* Clicking checkbox triggers state update
 * Completed todos have line-through style
 
 ---
@@ -133,9 +140,19 @@ It:
 * Stores todos in state
 * Manages loading and error states
 * Handles toggling todo completion
-* Provides filtering function (`getFilteredTodos`)
+* Provides filtering helper function (`getFilteredTodos`)
 
 It returns everything needed by the app.
+
+---
+
+## Context API (TodoContext)
+
+To improve architecture and avoid prop drilling, the Context API was introduced.
+
+Instead of passing `toggleTodo` through multiple components (App → TodoList → TodoItem), it is now provided globally using Context.
+
+This allows `TodoItem` to access it directly without intermediate props.
 
 ---
 
@@ -149,18 +166,30 @@ Handles data fetching.
 
 ---
 
+## Performance
+
+* The app uses `useMemo` to memoize filtered and searched todos
+* Filtering and searching are only recalculated when dependencies change (todos, filter, search)
+* This prevents unnecessary computations on every render
+* Data is fetched only once on mount using `useEffect`, avoiding repeated API calls
+
+---
+
 ## Trade-offs
 
-This project uses a layered structure (components, hooks, services) to keep the code clean and organized.
+This project uses a layered structure (components, hooks, services, context) to keep the code clean and organized.
 
 ### Pros:
 
 * Clear separation of responsibilities
 * Easy to read and maintain
 * Logic is reusable and isolated in hooks
+* No prop drilling (Context API used)
 * Scales well with features like search and filtering
+* Optimized performance using memoization
 
 ### Cons:
 
 * More files for a small project
 * Slightly more setup than a single-file approach
+* Additional complexity when introducing optimizations like memoization
