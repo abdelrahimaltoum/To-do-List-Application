@@ -9,6 +9,7 @@ const Header = () => {
         <p className="text-gray-400 mt-2 text-xs sm:text-sm">
           Stay organized and get things done
         </p>
+       
       </div>
     </header>
   );

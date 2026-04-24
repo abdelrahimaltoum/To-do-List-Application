@@ -1,50 +1,67 @@
 import { useState, useEffect, useMemo } from "react";
 import { fetchTodos } from "../services/api";
 
+/**
+ *  Custom hook to manage all todo-related logic
+ * Handles:
+ * - fetching data
+ * - loading state
+ * - error state
+ * - toggling todos
+ * - filtering helper function
+ */
 export const useTodos = () => {
-
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /**
+   *  Fetch todos from API on component mount
+   */
   useEffect(() => {
-    // Function to fetch todos from API
     const loadTodos = async () => {
       try {
-        const data = await fetchTodos(); // Call API function to get data 
-        setTodos(data); // Save fetched todos into state
-      } catch (err) { 
-        setError("Something went wrong"); // Store error message if request fails
+        const data = await fetchTodos(); // API call
+        setTodos(data); // store data in state
+      } catch (err) {
+        setError("Something went wrong"); // handle error
       } finally {
-        setLoading(false); // Stop loading in all cases
+        setLoading(false); // stop loading in all cases
       }
-    }; 
+    };
 
-    loadTodos(); // Run fetch on component mount
+    loadTodos();
   }, []);
 
-  // Toggle the completed state of a specific todo
+  /**
+   *  Toggle todo completion state
+   * Updates only the clicked todo
+   */
   const toggleTodo = (id) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
+    setTodos((prev) =>
+      prev.map((todo) =>
         todo.id === id
-          ? { ...todo, completed: !todo.completed } // Flip completed state
-          : todo // Keep other todos unchanged
+          ? { ...todo, completed: !todo.completed }
+          : todo
       )
     );
   };
 
-  // Memoized filtering function (performance optimization)
+  /**
+   *  Memoized filtering function (performance optimization)
+   * Prevents recalculation unless dependencies change
+   */
   const getFilteredTodos = useMemo(() => {
     return (todos, filter) => {
       return todos.filter((todo) => {
         if (filter === "completed") return todo.completed;
         if (filter === "pending") return !todo.completed;
-        return true; // Default → return all todos
+        return true;
       });
     };
   }, []);
 
+  //  Return all state + functions to the app
   return {
     todos,
     loading,

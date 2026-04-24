@@ -1,195 +1,195 @@
-
 # Todo App
 
-This is a simple Todo application built with React.
-It fetches todos from an external API and allows the user to mark tasks as completed using a checkbox.
+This is a modern Todo application built with React.  
+It demonstrates state management, Context API, custom hooks, performance optimization, and responsive UI design with smooth user interactions.
 
-It also includes:
-
-* filtering (all / completed / pending)
-* search (filter todos by title in real time)
-* performance optimization using memoization
-* state sharing using Context API (to avoid prop drilling)
+The app fetches todos from an external API and allows users to manage tasks efficiently with filtering, searching, and real-time updates.
 
 ---
 
-## How the app works
+## Features
 
-When the app starts, it loads data from an external API.
-The data is a list of todos, and each todo has:
+- Fetch todos from external API
+- Mark tasks as completed using checkbox
+- Filter todos (All / Completed / Pending)
+- Real-time search functionality
+- Responsive design (mobile + desktop)
+- Smooth visual feedback on interactions (hover, active, focus)
+- Loading, error, and empty states
+- Disabled states during loading for better UX
+- Global state management using Context API (no prop drilling)
+- Performance optimization using memoization
+- Separated custom hooks for better architecture (useTodos, useTodoView)
 
-* id
-* title
-* completed status
+---
 
-The app then displays these todos on the screen.
+## How the App Works
 
-Each todo has a checkbox.
-When the checkbox is clicked:
+When the app loads:
 
-* the todo's completed state is updated
-* the UI updates immediately (line-through text for completed tasks)
+1. Data is fetched from an external API
+2. Todos are stored in global state using Context API
+3. UI reacts to loading, error, or success state
 
-The user can filter the list using a dropdown:
+Each todo contains:
+- id
+- title
+- completed status
 
-* All → shows everything
-* Completed → shows only completed todos
-* Pending → shows only incomplete todos
+Users can:
+- Mark todos as completed
+- Filter todos based on status
+- Search todos in real time
 
-The user can also search:
+Filtering and search work together to produce a final visible list.
 
-* typing in the search bar filters todos by title
-* results update instantly while typing
-* search works together with the selected filter
-
-If no todos match the search, a message is shown.
+If no todos match the criteria, an empty state message is displayed.
 
 ---
 
 ## Data Flow
 
-The data flows in one direction:
+The application follows a clean unidirectional data flow:
 
-API → useTodos → App.jsx → TodoList → TodoItem → UI
+API → useTodos Hook → Context API → App.jsx → useTodoView → UI Components
 
-Filtering and searching both happen in `App.jsx` using data from the hook, then passed down to the UI.
+This ensures:
+- Clear separation of concerns
+- Predictable state management
+- Easy scalability
+
+---
+
+## State Management (Context API)
+
+The Context API is used to avoid prop drilling and share global state across the app.
+
+It provides:
+- todos
+- loading state
+- error state
+- toggleTodo function
+
+Instead of passing props through multiple components, TodoItem directly accesses Context.
+
+---
+
+## Custom Hooks
+
+### useTodos (Data Layer)
+
+Responsible for:
+- Fetching data from API
+- Managing todos state
+- Handling loading and error states
+- Toggling todo completion
+- Providing memoized filtering helper function (getFilteredTodos)
+
+---
+
+### useTodoView (View Layer)
+
+Responsible for:
+- Filtering todos by status
+- Searching todos by title
+- Memoizing computed results using useMemo
+
+>Note: useMemo logic was moved into a separate custom hook file (useTodoView) to improve separation of concerns and code organization.
 
 ---
 
 ## Components
 
 ### App.jsx
-
-This is the main controller of the app.
-
-* Uses the `useTodos` hook to get data and functions
-* Manages filter state (all / completed / pending)
-* Manages search state
-* Uses `useMemo` to optimize filtering and searching
-* Wraps the application with `TodoContext.Provider`
-* Passes final todos to `TodoList`
-* Provides `toggleTodo` through Context instead of prop drilling
+- Main application controller
+- Manages filter and search state
+- Combines Context data and derived UI logic
+- Passes filtered todos to UI components
 
 ---
 
 ### Header.jsx
-
-Simple UI component.
-
-* Displays app title
-* Shows a short description
-* No logic or state
+- Displays application title and description
+- Pure UI component (no logic)
 
 ---
 
 ### Search.jsx
-
-Handles searching.
-
-* Displays input field
-* Updates search state while typing
-* Filters todos by title in real time
-* Works together with filter
-* Only controls UI
+- Controlled input for real-time search
+- Updates state while typing
+- Works with filter system
 
 ---
 
 ### Filter.jsx
-
-Handles filtering.
-
-* Displays dropdown menu
-* Lets user choose (all / completed / pending)
-* Updates filter state
-* Only controls UI
+- Dropdown for selecting todo status
+- Controls view mode (all / completed / pending)
 
 ---
 
 ### TodoList.jsx
-
-Renders the list of todos.
-
-* Shows loading text while fetching data
-* Shows error message if API fails
-* Shows empty state if no todos match
-* Loops through todos using `.map()`
-* Sends each todo to `TodoItem`
-* No longer receives `toggleTodo` prop (handled by Context API)
+- Renders list of todos
+- Handles loading, error, and empty states
+- Uses Context API for toggle functionality
+- No longer receives toggleTodo as prop
 
 ---
 
 ### TodoItem.jsx
-
-Displays a single todo.
-
-* Shows checkbox and title
-* Checkbox reflects completed state
-* Uses Context API to access `toggleTodo`
-* Clicking checkbox triggers state update
-* Completed todos have line-through style
+- Displays individual todo item
+- Checkbox updates completion state via Context API
+- Shows visual feedback for completed tasks
+- Includes hover and active interaction effects
 
 ---
 
-## Custom Hook (useTodos)
+## Performance Optimization
 
-This hook handles all application logic.
-
-It:
-
-* Fetches data from the API
-* Stores todos in state
-* Manages loading and error states
-* Handles toggling todo completion
-* Provides filtering helper function (`getFilteredTodos`)
-
-It returns everything needed by the app.
+- useMemo is used to prevent unnecessary recalculations
+- Filtering and searching logic is isolated in useTodoView hook
+- API data is fetched once using useEffect
+- Context reduces prop drilling and improves maintainability
 
 ---
 
-## Context API (TodoContext)
+## UI / UX Improvements
 
-To improve architecture and avoid prop drilling, the Context API was introduced.
-
-Instead of passing `toggleTodo` through multiple components (App → TodoList → TodoItem), it is now provided globally using Context.
-
-This allows `TodoItem` to access it directly without intermediate props.
-
----
-
-## API Service (api.js)
-
-Handles data fetching.
-
-* Requests todos from JSONPlaceholder API
-* Checks for response errors
-* Returns JSON data
+### Responsive Design
+- Mobile-first layout
+- Flexbox used for adaptive layout
+- Inputs stack on small screens and align horizontally on larger screens
 
 ---
 
-## Performance
+### Smooth Visual Feedback on Interactions
+- Hover effects on todo cards
+- Active click feedback (scale animation)
+- Smooth transitions for UI state changes
+- Focus rings for accessibility
 
-* The app uses `useMemo` to memoize filtered and searched todos
-* Filtering and searching are only recalculated when dependencies change (todos, filter, search)
-* This prevents unnecessary computations on every render
-* Data is fetched only once on mount using `useEffect`, avoiding repeated API calls
+---
+
+### Loading State
+- Animated pulse effect while data is loading
+- Prevents user interaction during loading phase
+
+---
+
+### Disabled State
+- Checkbox disabled while loading
+- Visual feedback using opacity and cursor change
 
 ---
 
 ## Trade-offs
 
-This project uses a layered structure (components, hooks, services, context) to keep the code clean and organized.
-
 ### Pros:
-
-* Clear separation of responsibilities
-* Easy to read and maintain
-* Logic is reusable and isolated in hooks
-* No prop drilling (Context API used)
-* Scales well with features like search and filtering
-* Optimized performance using memoization
+- Clean architecture with separation of concerns
+- Context API eliminates prop drilling
+- Reusable custom hooks
+- Optimized rendering with memoization
+- Responsive and interactive UI
 
 ### Cons:
-
-* More files for a small project
-* Slightly more setup than a single-file approach
-* Additional complexity when introducing optimizations like memoization
+- More files for a small project
+- Slight increase in complexity due to abstraction layers
