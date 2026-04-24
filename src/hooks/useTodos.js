@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchTodos } from "../services/api";
 
 export const useTodos = () => {
+
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,23 +11,37 @@ export const useTodos = () => {
     // Function to fetch todos from API
     const loadTodos = async () => {
       try {
-        // Call API service to get data
+        // Call API function to get data
         const data = await fetchTodos();
 
-        // Save data into state
+        // Save fetched todos into state
         setTodos(data);
       } catch (err) {
-        // Handle any error during fetch
-        setError("Something went wrong while fetching todos");
+        // If an error occurs, store error message
+        setError("Something went wrong");
       } finally {
-        // Stop loading regardless of success or failure
+        // Stop loading whether success or error
         setLoading(false);
       }
     };
 
+    // Execute the fetch function
     loadTodos();
   }, []);
 
-  // Return values so components can use them
-  return { todos, loading, error };
+  // Function to toggle completed state of a todo
+  const toggleTodo = (id) => {
+    setTodos((prevTodos) =>
+      // Loop through previous todos
+      prevTodos.map((todo) =>
+        // If this is the clicked todo, flip its completed value
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo // otherwise keep it unchanged
+      )
+    );
+  };
+
+  // Return data and functions to be used in components
+  return {todos,loading,error,toggleTodo};
 };

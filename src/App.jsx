@@ -1,9 +1,9 @@
+import { useTodos } from "./hooks/useTodos";
 import Header from "./components/Header";
 import TodoList from "./components/TodoList";
-import { useTodos } from "./hooks/useTodos";
 
 const App = () => {
-  const { todos, loading, error } = useTodos();
+  const { todos, loading, error, toggleTodo } = useTodos();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -14,6 +14,7 @@ const App = () => {
           todos={todos}
           loading={loading}
           error={error}
+          toggleTodo={toggleTodo}
         />
       </div>
     </div>
