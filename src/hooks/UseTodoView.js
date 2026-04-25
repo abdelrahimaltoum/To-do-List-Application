@@ -1,35 +1,63 @@
 import { useMemo } from "react";
 
 /**
- *  Custom hook for derived UI state
- * Handles filtering + search logic for todos
+ * Custom hook for derived UI state
  *
- * This keeps App.jsx clean by moving all "view logic" here
+ * Responsibility:
+ * - Takes raw todos data
+ * - Applies filtering (all / completed / pending)
+ * - Applies search functionality
+ * - Returns a computed "view-ready" list
+ *
+ * This keeps App.jsx clean by moving all UI transformation logic here.
  */
 export const useTodoView = (todos, filter, search) => {
 
   /**
-   *  Memoized derived list
-   * Recalculates only when todos, filter, or search changes
+   * Memoized derived todo list
+   *
+   * Why useMemo?
+   * - Prevents recalculating filter + search on every render
+   * - Only recalculates when dependencies change
+   *
+   * Dependencies:
+   * - todos → new data from API or updates
+   * - filter → selected filter option
+   * - search → search input value
    */
   const filteredTodos = useMemo(() => {
 
     return todos
 
-      //  Step 1: Apply status filter (all / completed / pending)
+      /**
+       * STEP 1: Filter by status
+       *
+       * Logic:
+       * - "completed" → show only completed todos
+       * - "pending" → show only incomplete todos
+       * - "all" → show everything
+       */
       .filter((todo) => {
         if (filter === "completed") return todo.completed;
         if (filter === "pending") return !todo.completed;
         return true;
       })
 
-      //  Step 2: Apply search filter (case-insensitive)
+      /**
+       * STEP 2: Filter by search text
+       *
+       * Logic:
+       * - Converts both strings to lowercase for case-insensitive matching
+       * - Checks if todo title includes search text
+       */
       .filter((todo) =>
         todo.title.toLowerCase().includes(search.toLowerCase())
       );
 
   }, [todos, filter, search]);
 
-  //  Return computed list
+  /**
+   * Return final computed list
+   */
   return filteredTodos;
 };

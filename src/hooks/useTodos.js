@@ -2,31 +2,46 @@ import { useState, useEffect, useMemo } from "react";
 import { fetchTodos } from "../services/api";
 
 /**
- *  Custom hook to manage all todo-related logic
- * Handles:
- * - fetching data
- * - loading state
- * - error state
- * - toggling todos
- * - filtering helper function
+ * Custom hook to manage all todo-related logic
+ *
+ * This hook centralizes:
+ * - Data fetching
+ * - Loading state
+ * - Error handling
+ * - Todo updates (toggle)
+ * - Filtering helper logic
+ *
+ * This keeps components clean and focused only on UI.
  */
 export const useTodos = () => {
+
+  // Stores the list of todos fetched from API
   const [todos, setTodos] = useState([]);
+
+  // Tracks loading state while fetching data
   const [loading, setLoading] = useState(true);
+
+  // Stores error message if API request fails
   const [error, setError] = useState(null);
 
   /**
-   *  Fetch todos from API on component mount
+   * Fetch todos when component mounts
+   * Runs only once because dependency array is empty
    */
   useEffect(() => {
     const loadTodos = async () => {
       try {
-        const data = await fetchTodos(); // API call
-        setTodos(data); // store data in state
+        // API call to fetch todos
+        const data = await fetchTodos();
+
+        // Store fetched todos in state
+        setTodos(data);
       } catch (err) {
-        setError("Something went wrong"); // handle error
+        // Handle any API or network error
+        setError("Something went wrong");
       } finally {
-        setLoading(false); // stop loading in all cases
+        // Stop loading state whether success or failure
+        setLoading(false);
       }
     };
 
@@ -34,8 +49,10 @@ export const useTodos = () => {
   }, []);
 
   /**
-   *  Toggle todo completion state
-   * Updates only the clicked todo
+   * Toggle todo completion status
+   *
+   * Finds the clicked todo by id and flips its "completed" value
+   * This ensures immutability (important React pattern)
    */
   const toggleTodo = (id) => {
     setTodos((prev) =>
@@ -48,8 +65,16 @@ export const useTodos = () => {
   };
 
   /**
-   *  Memoized filtering function (performance optimization)
-   * Prevents recalculation unless dependencies change
+   * Memoized filtering function
+   *
+   * Purpose:
+   * - Avoid recalculating filter logic on every render
+   * - Only recompute when dependencies change
+   *
+   * Filters:
+   * - completed → only completed todos
+   * - pending → only incomplete todos
+   * - all → return everything
    */
   const getFilteredTodos = useMemo(() => {
     return (todos, filter) => {
@@ -61,7 +86,9 @@ export const useTodos = () => {
     };
   }, []);
 
-  //  Return all state + functions to the app
+  /**
+   * Expose state + functions to components
+   */
   return {
     todos,
     loading,
