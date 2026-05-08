@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTodoView } from "./hooks/useTodoView"; // Handles filtering + searching logic (derived UI state)
+import { useTodoView } from "./hooks/UseTodoView"; // Handles filtering + searching logic (derived UI state)
 import { useTodoContext } from "./context/TodoContext"; // Global state (todos, loading, error from Context API)
 import { usePagination } from "./hooks/usePagination"; // Handles pagination slicing logic
 
